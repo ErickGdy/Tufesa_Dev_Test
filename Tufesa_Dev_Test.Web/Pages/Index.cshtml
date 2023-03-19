@@ -5,6 +5,7 @@
     ViewData["Title"] = "Customers";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
+
 <!-- Page Heading -->
 <h1 class="h3 mb-2 text-gray-800">Customers</h1>
 <p class="mb-4">
@@ -103,6 +104,8 @@
         </table>
     </div>
 </div>
+@Html.AntiForgeryToken()
+
 <script>
 
     
@@ -161,9 +164,11 @@ function Delete(id, label) {
             $.ajax({
                 type: "POST",
                 url: '@Url.Page("Index","Delete")',
-                data: {
-                    id: id
-                },
+                    data: { id: id },
+                    headers: {
+                        RequestVerificationToken:
+                            $('input:hidden[name="__RequestVerificationToken"]').val()
+                    },
                 success: function (data) {
                     if (!data) {
                         Swal.fire("Information updated", "", "success").then((result) => {
@@ -172,8 +177,8 @@ function Delete(id, label) {
                     } else {
                         Swal.fire("Something went wrong", "", "error");
                     }
-                }, error: function (jqXHR, textStatus, errorThrown) {
-                    Swal.fire({ title: textStatus, html: errorThrown, icon: "error" })
+                    }, error: function (data, textStatus, jqXHR) {
+                        Swal.fire({ title: textStatus, html: data.error, icon: "error" })
                 }
             });
         }

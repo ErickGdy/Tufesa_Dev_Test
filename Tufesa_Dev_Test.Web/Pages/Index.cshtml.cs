@@ -40,13 +40,13 @@ namespace Tufesa_Dev_Test.Web.Pages
             }
         }
 
-        public async Task<IActionResult> OnPostDelete(int? id)
+        public async Task<IActionResult> OnPostDelete(string id)
         {
-            if (id == null)
+            if (string.IsNullOrEmpty(id))
             {
                 return NotFound();
             }
-            var actionResult = await _api.Delete(id.ToString());
+            var actionResult = await _api.Delete(id);
             var objectResult = actionResult as ObjectResult;
             if (objectResult.StatusCode != 200)
             {
