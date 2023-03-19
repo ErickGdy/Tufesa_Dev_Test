@@ -29,8 +29,8 @@ namespace Tufesa_Dev_Test.Web.Pages
         public IActionResult OnGet()
         {
             Options = new List<SelectListItem>();
-            Options.Add(new SelectListItem() { Value = "0", Text = "Not Set", Selected = true });
-            Options.Add(new SelectListItem() { Value = "1", Text = "Active" });
+            Options.Add(new SelectListItem() { Value = "0", Text = "Not Set" });
+            Options.Add(new SelectListItem() { Value = "1", Text = "Active", Selected = true });
             Options.Add(new SelectListItem() { Value = "2", Text = "Inactive" });
             return Page();
         }
@@ -42,11 +42,14 @@ namespace Tufesa_Dev_Test.Web.Pages
         // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
         public async Task<IActionResult> OnPostAsync()
         {
-          if (!ModelState.IsValid ||  Customer == null)
+            Options = new List<SelectListItem>();
+            Options.Add(new SelectListItem() { Value = "0", Text = "Not Set" });
+            Options.Add(new SelectListItem() { Value = "1", Text = "Active" });
+            Options.Add(new SelectListItem() { Value = "2", Text = "Inactive" });
+            if (!ModelState.IsValid ||  Customer == null)
             {
                 return Page();
             }
-
             var actionResult = await _api.Create(Customer);
             var objectResult = actionResult as ObjectResult;
             if (objectResult.StatusCode != 200)
@@ -56,7 +59,7 @@ namespace Tufesa_Dev_Test.Web.Pages
                 return Page();
 
             }
-            return RedirectToPage("./Index");
+            return new OkResult();
         }
     }
 }

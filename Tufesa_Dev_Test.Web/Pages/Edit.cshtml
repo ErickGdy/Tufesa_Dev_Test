@@ -3,60 +3,114 @@
 
 @{
     ViewData["Title"] = "Edit";
-    Layout = "~/Pages/Shared/_Layout.cshtml";
+    Layout = null;
 }
 
-<h1>Edit</h1>
-
-<h4>Customer</h4>
+<center><h4>Edit Customer <span class="fas fa-users"></span></h4></center>
 <hr />
 <div class="row">
-    <div class="col-md-4">
-        <form method="post">
+    <div class="col-md-12">
+        <form id="edit_customer_form" asp-page="Edit" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Customer.Id" />
-            <div class="form-group">
-                <label asp-for="Customer.FirstName" class="control-label"></label>
-                <input asp-for="Customer.FirstName" class="form-control" />
-                <span asp-validation-for="Customer.FirstName" class="text-danger"></span>
+            <input type="hidden" asp-for="Customer.Id"/>
+            <span asp-validation-for="Customer" class="text-danger"></span>
+            <div class="row">
+                <div class="col-md-6">
+                    <label asp-for="Customer.FirstName" class="control-label"></label>
+                    <input asp-for="Customer.FirstName" class="form-control" required />
+                    <span asp-validation-for="Customer.FirstName" class="text-danger"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Customer.LastName" class="control-label"></label>
+                    <input asp-for="Customer.LastName" class="form-control" required />
+                    <span asp-validation-for="Customer.LastName" class="text-danger"></span>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Customer.LastName" class="control-label"></label>
-                <input asp-for="Customer.LastName" class="form-control" />
-                <span asp-validation-for="Customer.LastName" class="text-danger"></span>
+            <div class="row">
+                <div class="col-md-6">
+                    <label asp-for="Customer.Email" class="control-label"></label>
+                    <input asp-for="Customer.Email" class="form-control" type="email" required />
+                    <span asp-validation-for="Customer.Email" class="text-danger"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Customer.RFC" class="control-label"></label>
+                    <input asp-for="Customer.RFC" class="form-control" required />
+                    <span asp-validation-for="Customer.RFC" class="text-danger"></span>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Customer.RFC" class="control-label"></label>
-                <input asp-for="Customer.RFC" class="form-control" />
-                <span asp-validation-for="Customer.RFC" class="text-danger"></span>
+            <div class="row">
+                <div class="col-md-6">
+                    <label asp-for="Customer.BornDate" class="control-label"></label>
+                    <input asp-for="Customer.BornDate" type="date" value="@Model.Customer.BornDate.Value.ToString("yyyy-MM-dd")" class="form-control" /> 
+                    <span asp-validation-for="Customer.BornDate" class="text-danger"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Customer.Status" class="control-label"></label>
+                    <select asp-for="Customer.Status" asp-items="Model.Options" class="form-control"></select>
+                    <span asp-validation-for="Customer.Status" class="text-danger"></span>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Customer.BornDate" class="control-label"></label>
-                <input asp-for="Customer.BornDate" type="date" value="@Model.Customer.BornDate.Value.ToString("yyyy-MM-dd")" class="form-control" />
-                <span asp-validation-for="Customer.BornDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Customer.Status" class="control-label"></label>
-                <select asp-for="Customer.Status" asp-items="Model.Options" class="form-control"></select>
-                <span asp-validation-for="Customer.Status" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+            <div class="row">
+                <div class="form-group">
+                    <input type="submit" form="edit_customer_form" value="Save" class="btn btn-primary" />
+                </div>
             </div>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-page="./Index">Back to List</a>
-</div>
+<script>
+    $(function(){
+        $("#Customer_BornDate").val('@Model.Customer.BornDate.Value.ToString("yyyy-MM-dd")');
+
+    });
+    $('#edit_customer_form').submit(function (e) {
+        e.preventDefault(); // don't submit multiple times
+        if ($('#edit_customer_form').validate()) {
+            Swal.fire({
+                title: "Please wait",
+                html: "We are procesing your request",
+                didOpen: () => {
+                    Swal.showLoading();
+                    Swal.stopTimer()
+                },
+                showConfirmButton: false,
+                allowOutsideClick: false
+            });
+            var form = $(this);
+            var actionUrl = form.attr('action');
+            var formData = new FormData($(form)[0]);
+            $.ajax({
+                type: "POST",
+                url: actionUrl,
+                data: formData,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (data) {
+                    if (!data) {
+                        $("#ModalForm").modal("hide");
+                        Swal.fire("Information saved successfully", "", "success").then((result) => {
+                            location.reload();
+                        });
+                    } else {
+                        $("#ModalForm").modal("hide");
+                        Swal.fire("Missing information", "", "error").then((result) => {
+                            $("#modal_content").html(data);
+                            $("#ModalForm").modal('show');
+                        });
+                    }
+                }, error: function (jqXHR, textStatus, errorThrown) {
+                    Swal.fire({ title: textStatus, html: errorThrown, icon: "error" })
+                }
+            });
+        }
+    });
+</script>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
-<script language="javascript">
-    (function () {
-        document.getElementsByName("Customer.BornDate")[0].value = '@Model.Customer.BornDate.Value.ToString("yyyy-MM-dd")';
-    })();
-    
-</script>
+

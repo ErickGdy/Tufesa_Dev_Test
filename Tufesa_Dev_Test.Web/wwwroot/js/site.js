@@ -5,5 +5,17 @@
  $(function () {
         $('table').DataTable();
     $('[data-toggle="tooltip"]').tooltip();
+ });
+
+$(function () {
+    $(".modal").on("hidden.bs.modal", function () {
+        $("#modal_content").html("Loading....");
+        $(".modal-footer input[type='submit']").remove();
+    });
+    $(".modal").on("show.bs.modal", function () {
+        $('[data-toggle="tooltip"]').tooltip('hide');
+        $("#modal_content input[type='submit']").prependTo(".modal-footer");
+
+    });
 });
 

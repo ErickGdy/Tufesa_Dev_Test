@@ -39,5 +39,20 @@ namespace Tufesa_Dev_Test.Web.Pages
                 RedirectToAction("Error");
             }
         }
+
+        public async Task<IActionResult> OnPostDelete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            var actionResult = await _api.Delete(id.ToString());
+            var objectResult = actionResult as ObjectResult;
+            if (objectResult.StatusCode != 200)
+            {
+                return Page();
+            }
+            return new OkResult();
+        }
     }
 }

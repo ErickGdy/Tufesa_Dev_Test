@@ -64,11 +64,29 @@ namespace Tufesa_Dev_Test.Web.Pages
         // For more details, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+            Options = new List<SelectListItem>();
+            Options.Add(new SelectListItem()
+            {
+                Value = "0",
+                Text = "Not Set",
+                Selected = Customer.Status == Customer.CustomerStatus.NotSet ? true : false
+            });
+            Options.Add(new SelectListItem()
+            {
+                Value = "1",
+                Text = "Active",
+                Selected = Customer.Status == Customer.CustomerStatus.Active ? true : false
+            });
+            Options.Add(new SelectListItem()
+            {
+                Value = "2",
+                Text = "Inactive",
+                Selected = Customer.Status == Customer.CustomerStatus.Inactive ? true : false
+            });
             if (!ModelState.IsValid || Customer == null)
             {
                 return Page();
             }
-
             var actionResult = await _api.Update(Customer.Id, Customer);
             var objectResult = actionResult as ObjectResult;
             if (objectResult.StatusCode != 200)
@@ -76,9 +94,8 @@ namespace Tufesa_Dev_Test.Web.Pages
                 var value = objectResult.Value;
                 ModelState.AddModelError("Customer", value.ToString());
                 return Page();
-
             }
-            return RedirectToPage("./Index");
+            return new OkResult();
         }
     }
 }

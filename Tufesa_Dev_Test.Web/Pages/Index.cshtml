@@ -5,60 +5,179 @@
     ViewData["Title"] = "Customers";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
-
-<p>
-    <a asp-page="Create">Create New</a>
+<!-- Page Heading -->
+<h1 class="h3 mb-2 text-gray-800">Customers</h1>
+<p class="mb-4">
+    Customer model definition:
+    [Id] [int] IDENTITY(1,1) NOT NULL,
+    [FirstName] [nvarchar](max) NOT NULL,
+    [LastName] [nvarchar](max) NOT NULL,
+    [RFC] [nvarchar](13) NOT NULL,
+    [Email] [nvarchar](100) NOT NULL,
+    [Birthdate] [datetime2](7) NULL,
+    [Status] [int] NOT NULL
 </p>
-<table class="table" id="Customers_Table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Customer[0].FirstName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Customer[0].LastName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Customer[0].RFC)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Customer[0].BornDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Customer[0].Status)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model.Customer) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.FirstName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LastName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.RFC)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.BornDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Status)
-            </td>
-            <td>
-                <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+
+<!-- Modal -->
+<div class="modal fade" id="ModalForm" tabindex="-1" role="dialog"  aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+            </div>
+            <div class="modal-body" id="modal_content">
+                Loading...
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- DataTales Example -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="d-inline m-0 font-weight-bold text-danger"><span class="fas fa-users"></span>&nbsp; @ViewData["Title"]</h6> &nbsp;
+        <a href="#" onclick="FormModal('@Url.Page("Create")')" class="btn btn-success btn-circle" title="Add new" data-toggle="tooltip">
+            <i class="fas fa-plus"></i>
+        </a>
+    </div>
+    <div class="card-body">
+        <table class="table" id="Customers_Table">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Customer[0].FirstName)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Customer[0].LastName)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Customer[0].RFC)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Customer[0].Email)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Customer[0].BornDate)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Customer[0].Status)
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+        @foreach (var item in Model.Customer) {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.FirstName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.LastName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.RFC)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Email)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.BornDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Status)
+                    </td>
+                    <td>
+                            @if(item.Status == Data.Models.Customer.CustomerStatus.Active){
+                                <a class='btn btn-danger btn-sm' title='@Tufesa_Dev_Test.Data.Resources.Buttons.DELETE' href='#' onclick='Delete(@item.Id,"@Data.Resources.Buttons.DELETE")'><i class='fa fa-trash-can'> </i></a>
+                            }else{
+                                <a class='btn btn-success btn-sm' title='@Tufesa_Dev_Test.Data.Resources.Buttons.RESTORE' href='#' onclick='Delete(@item.Id,"@Data.Resources.Buttons.RESTORE")'><i class='fa fa-trash-can-slash'> </i></a>
+                            }
+                            <a class='btn btn-info btn-sm' data-toggle='modal' title='@Tufesa_Dev_Test.Data.Resources.Buttons.DETAILS' href='#ModalDetails' onclick='FormModal("@Url.Page("Details", new {Id = item.Id})")'><i class='fa fa-info'></i> </a>
+                            <a class='btn btn-light btn-sm' data-toggle='modal' title='@Tufesa_Dev_Test.Data.Resources.Buttons.EDIT' href='#ModalEdit' onclick='FormModal("@Url.Page("Edit", new {Id = item.Id})")'><i class='fa fa-pencil'> </i> </a>
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
 <script>
-    $(document).ready(function () {
-        $('#Customers_Table').DataTable();
+
+    
+function FormModal(url) {
+    Swal.fire({
+        title: "Please wait",
+        html: "We are procesing your request",
+        didOpen: () => {
+            Swal.showLoading();
+            Swal.stopTimer()
+        },
+        showConfirmButton: false,
+        allowOutsideClick: false
     });
+       $.ajax({
+           url: url,
+           type: 'get',
+           success: function(response){ 
+                Swal.close();
+               // Add response in Modal body
+                $('#modal_content').html(response);
+               // Display Modal
+                $("#ModalForm").modal('show');
+            }, error: function (responseTxt, statusTxt, xhr) {
+                Swal.fire({
+                    icon: "error",
+                    title: 'Oops...',
+                    html: 'Something went wrong'
+                });
+           }
+       });
+}
+function Delete(id, label) {
+    var message = "Are you sure you want to "+label+" this customer?"
+    Swal.fire({
+        title: message,
+        text: "",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        cancelButtonText: '@Tufesa_Dev_Test.Data.Resources.Buttons.NO',
+        confirmButtonText: '@Tufesa_Dev_Test.Data.Resources.Buttons.YES'
+    }).then((result) => {
+        if (result.value) {
+            Swal.fire({
+                title: "Please wait",
+                html: "We are procesing your request",
+                didOpen: () => {
+                    Swal.showLoading();
+                    Swal.stopTimer()
+                },
+                showConfirmButton: false,
+                allowOutsideClick: false
+            });
+            $.ajax({
+                type: "POST",
+                url: '@Url.Page("Index","Delete")',
+                data: {
+                    id: id
+                },
+                success: function (data) {
+                    if (!data) {
+                        Swal.fire("Information updated", "", "success").then((result) => {
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire("Something went wrong", "", "error");
+                    }
+                }, error: function (jqXHR, textStatus, errorThrown) {
+                    Swal.fire({ title: textStatus, html: errorThrown, icon: "error" })
+                }
+            });
+        }
+    });
+}
+
 </script>

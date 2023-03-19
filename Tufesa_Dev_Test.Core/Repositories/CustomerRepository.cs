@@ -38,7 +38,7 @@ namespace Tufesa_Dev_Test.Core.Repositories
                 return new OkObjectResult(Customer);
             }catch(Exception ex)
             {
-                var response = new ObjectResult(ex.Message);
+                var response = new ObjectResult(ex.InnerException ==null ? ex.Message : ex.InnerException.Message);
                 response.StatusCode = 500;
                 return response;
             }
@@ -67,7 +67,7 @@ namespace Tufesa_Dev_Test.Core.Repositories
             }
             catch (Exception ex)
             {
-                var response = new ObjectResult(ex.Message);
+                var response = new ObjectResult(ex.InnerException == null ? ex.Message : ex.InnerException.Message);
                 response.StatusCode = 500;
                 return response;
             }
@@ -90,7 +90,7 @@ namespace Tufesa_Dev_Test.Core.Repositories
             }
             catch (Exception ex)
             {
-                var response = new ObjectResult(ex.Message);
+                var response = new ObjectResult(ex.InnerException == null ? ex.Message : ex.InnerException.Message);
                 response.StatusCode = 500;
                 return response;
             }
@@ -112,7 +112,7 @@ namespace Tufesa_Dev_Test.Core.Repositories
             }
             catch (Exception ex)
             {
-                var response = new ObjectResult(ex.Message);
+                var response = new ObjectResult(ex.InnerException == null ? ex.Message : ex.InnerException.Message);
                 response.StatusCode = 500;
                 return response;
             }
@@ -127,7 +127,7 @@ namespace Tufesa_Dev_Test.Core.Repositories
             }
             catch (Exception ex)
             {
-                var response = new ObjectResult(ex.Message);
+                var response = new ObjectResult(ex.InnerException == null ? ex.Message : ex.InnerException.Message);
                 response.StatusCode = 500;
                 return response;
             }
@@ -141,7 +141,7 @@ namespace Tufesa_Dev_Test.Core.Repositories
             }
             catch (Exception ex)
             {
-                var response = new ObjectResult(ex.Message);
+                var response = new ObjectResult(ex.InnerException == null ? ex.Message : ex.InnerException.Message);
                 response.StatusCode = 500;
                 return response;
             }
