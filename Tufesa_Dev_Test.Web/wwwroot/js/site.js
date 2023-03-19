@@ -2,6 +2,8 @@
 // for details on configuring this project to bundle and minify static web assets.
 
 // Write your JavaScript code.
-$(document).ready(function () {
-    $('table').DataTable();
+ $(function () {
+        $('table').DataTable();
+    $('[data-toggle="tooltip"]').tooltip();
 });
+
